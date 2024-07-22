@@ -6,7 +6,7 @@
 #include "schema.h"
 #include "datatype.h"
 
-Record::Record(const std::vector<Column>& schema, const std::vector<Value>& values) {
+Record::Record(const Schema& schema, const std::vector<Value>& values) {
     if (schema.size() != values.size()) {
         throw std::runtime_error("Schema and values size mismatch");
     }

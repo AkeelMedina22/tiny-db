@@ -5,27 +5,30 @@
 
 class Value {
 public:
-    Value(DataType type);
+    static const int MAX_STR_SIZE = 256;
+
     Value(int intValue);
     Value(float floatValue);
-    Value(const std::string& strValue);
-    ~Value();
+    Value(double doubleValue);
+    Value(const char* strValue);
+    Value(const Value& other); 
+    Value& operator=(const Value& other); 
 
-    void setIntValue(int intValue);
-    void setFloatValue(float floatValue);
-    void setStringValue(const std::string& strValue);
-    
     DataType getType() const;
     void* getData() const;
     void printValue() const;
+
+    void setIntValue(int intValue);
+    void setFloatValue(float floatValue);
+    void setStringValue(const char* strValue);
 
 private:
     DataType type;
     union {
         int intValue;
         float floatValue;
-        std::string* strValue; 
+        char strValue[MAX_STR_SIZE];
     } data;
 
-    void clearString();
+    void copyFrom(const Value& other);
 };

@@ -9,13 +9,14 @@ class Table {
     public:
         Table();
         Table(const std::string& name, const Schema& schema);
-        // void addRecord(const Record& record);
+        void addRecord(const Record& record);
         // void removeRecord(const Record& record);
         // void updateRecord(const Record& record);
         // void selectRecord(const Record& record);
 
         const std::string& getName() const;
         const Schema& getColumns() const;
+        const std::vector<Record>& getRecords() const;
 
     private:
         Schema schema;

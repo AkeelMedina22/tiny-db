@@ -1,12 +1,7 @@
 #include "value.h"
 #include <iostream>
 #include <stdexcept>
-
-Value::Value(DataType type) : type(type) {
-    if (type == DataType::VARCHAR) {
-        data.strValue = new std::string();
-    }
-}
+#include <cstring> 
 
 Value::Value(int intValue) : type(DataType::INT) {
     data.intValue = intValue;
@@ -16,39 +11,32 @@ Value::Value(float floatValue) : type(DataType::FLOAT) {
     data.floatValue = floatValue;
 }
 
-Value::Value(const std::string& strValue) : type(DataType::VARCHAR) {
-    data.strValue = new std::string(strValue);
-}
+Value::Value(double doubleValue) : Value(static_cast<float>(doubleValue)) {}
 
-Value::~Value() {
-    if (type == DataType::VARCHAR) {
-        clearString();
+Value::Value(const char* strValue) : type(DataType::VARCHAR) {
+    if (strlen(strValue) >= MAX_STR_SIZE) {
+        throw std::runtime_error("String value is too long");
     }
+    strcpy(data.strValue, strValue);
 }
 
-void Value::setIntValue(int intValue) {
-    if (type == DataType::VARCHAR) {
-        clearString();
+Value::Value(const Value& other) {
+    copyFrom(other);
+}
+
+Value& Value::operator=(const Value& other) {
+    if (this != &other) {
+        copyFrom(other);
     }
-    type = DataType::INT;
-    data.intValue = intValue;
+    return *this;
 }
 
-void Value::setFloatValue(float floatValue) {
+void Value::copyFrom(const Value& other) {
+    type = other.type;
     if (type == DataType::VARCHAR) {
-        clearString();
-    }
-    type = DataType::FLOAT;
-    data.floatValue = floatValue;
-}
-
-void Value::setStringValue(const std::string& strValue) {
-    if (type != DataType::VARCHAR) {
-        clearString();
-        type = DataType::VARCHAR;
-        data.strValue = new std::string(strValue);
+        strcpy(data.strValue, other.data.strValue);
     } else {
-        *data.strValue = strValue;
+        data = other.data;
     }
 }
 
@@ -63,7 +51,7 @@ void* Value::getData() const {
         case DataType::FLOAT:
             return const_cast<float*>(&data.floatValue);
         case DataType::VARCHAR:
-            return data.strValue;
+            return const_cast<char*>(data.strValue);
         default:
             return nullptr;
     }
@@ -78,14 +66,25 @@ void Value::printValue() const {
             std::cout << data.floatValue;
             break;
         case DataType::VARCHAR:
-            std::cout << *data.strValue;
+            std::cout << data.strValue;
             break;
     }
 }
 
-void Value::clearString() {
-    if (type == DataType::VARCHAR && data.strValue) {
-        delete data.strValue;
-        data.strValue = nullptr;
+void Value::setIntValue(int intValue) {
+    type = DataType::INT;
+    data.intValue = intValue;
+}
+
+void Value::setFloatValue(float floatValue) {
+    type = DataType::FLOAT;
+    data.floatValue = floatValue;
+}
+
+void Value::setStringValue(const char* strValue) {
+    if (strlen(strValue) >= MAX_STR_SIZE) {
+        throw std::runtime_error("String value is too long");
     }
+    type = DataType::VARCHAR;
+    strcpy(data.strValue, strValue);
 }

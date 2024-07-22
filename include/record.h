@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 #include "value.h"
-#include "column.h"
+#include "schema.h"
 
 class Record {
     public:
         std::vector<Value> values;
-        Record(const std::vector<Column>& schema, const std::vector<Value>& values);
+        Record(const Schema& schema, const std::vector<Value>& values);
 };

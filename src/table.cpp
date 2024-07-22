@@ -14,3 +14,11 @@ const std::string& Table::getName() const {
 const Schema& Table::getColumns() const {
     return schema;
 }
+
+const std::vector<Record>& Table::getRecords() const {
+    return records;
+}
+
+void Table::addRecord(const Record& record){
+    records.push_back(record);
+}
